@@ -1,9 +1,10 @@
 #!/usr/bin/python
 from flask import Flask, render_template, request, jsonify
 app = Flask(__name__)
-
+import _thread
 from lib import nhl
 from lib import light
+from lib import nhl_watch
 
 
 @app.route('/')
@@ -50,7 +51,19 @@ def goal_light_activate():
     return "OK"
 
 
+@app.route('/api/v1/team/<team>/watch_goals')
+def watch_goals(team):
+
+    delay = request.args.get('delay', '1')
+
+    print("Starting goal watcher in a new thread")
+    _thread.start_new_thread(nhl_watch.watch_team_goals, (team, delay))
+
+    return "OK"
+
+
 if __name__ == "__main__":
+
 
     print("Setup of the GOAL light")
     light.setup()
