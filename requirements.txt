@@ -4,3 +4,4 @@ RPI.GPIO
 flask
 pep8
 autopep8
+ipython
