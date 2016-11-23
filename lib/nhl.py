@@ -78,7 +78,7 @@ def check_if_game(team):
     team_id = get_team_id(team)
 
     # Set URL depending on team selected
-    url = '{}schedule?team_id={}'.format(NHL_API_URL, team_id)
+    url = '{}schedule?teamId={}'.format(NHL_API_URL, team_id)
     # Need test to make sure error is avoided
     try:
         gameday_url = requests.get(url)
