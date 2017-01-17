@@ -21,7 +21,7 @@ def setup():
     GPIO.output(7, True)
     # Set GPIO 15 as a PULL DOWN switch
     GPIO.setup(15, GPIO.IN, GPIO.PUD_DOWN)  # If no input button connected, comment this line out
-    GPIO.add_event_detect(15, RISING, callback=activate_goal_light, bouncetime=5000)
+    GPIO.add_event_detect(15, GPIO.RISING, callback=activate_goal_light, bouncetime=5000)
    
 
 
