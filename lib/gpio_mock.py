@@ -6,7 +6,8 @@
 BOARD = "BOARD"
 IN = "INPUT"
 OUT = "OUTPUT"
-
+PUD_DOWN = "PULL_DOWN"
+PUD_UP = "PULL_UP"
 
 def setmode(mode):
     print("Set mode {0}".format(mode))
