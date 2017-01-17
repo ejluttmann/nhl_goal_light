@@ -20,9 +20,9 @@ def setup():
     GPIO.setup(7, GPIO.OUT)
     GPIO.output(7, True)
     # Set GPIO 15 as a PULL DOWN switch
-    #GPIO.setup(15, GPIO.IN, GPIO.PUD_DOWN)  # If no input button connected, comment this line out
-    #    GPIO.add_event_detect(15,RISING,callback=goal_light_activate,bouncetime=5000) #Missing how to call ACTIVATE LIGHT function
-    #    GPIO.remove_event_detect(15) #Add to end of function
+    GPIO.setup(15, GPIO.IN, GPIO.PUD_DOWN)  # If no input button connected, comment this line out
+    GPIO.add_event_detect(15, RISING, callback=activate_goal_light, bouncetime=5000)
+   
 
 
 def activate_goal_light():
@@ -46,5 +46,6 @@ def cleanup():
     """ Function to cleanup raspberry pi GPIO at end of code """
 
     # Restore GPIO to default state
+    GPIO.remove_event_detect(15) #Add to end of function
     GPIO.cleanup()
     print("GPIO cleaned!")
