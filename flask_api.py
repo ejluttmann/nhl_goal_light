@@ -49,6 +49,12 @@ def score(team_id):
 def game(team_id):
     response = { 'game' : nhl.check_if_game(team_id)}
     return jsonify(response)
+  
+  
+@app.route('/api/v1/team/<team_id>/end_game')
+def end_game(team_id):
+    response = { 'end_game' : nhl.check_game_end(team_id)}
+    return jsonify(response)
 
 
 @app.route('/api/v1/goal_light/activate')

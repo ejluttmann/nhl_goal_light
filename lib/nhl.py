@@ -70,7 +70,9 @@ def check_season():
 def check_if_game(team_id):
     """ Function to check if there is a game now with chosen team. Returns True if game, False if NO game. """
 
+    # Get current time
     now=datetime.datetime.now()
+    
     # Set URL depending on team selected
     url = '{}schedule?teamId={}&date={:%Y-%m-%d}'.format(NHL_API_URL, team_id,now)
     # Need test to make sure error is avoided
@@ -83,4 +85,28 @@ def check_if_game(team_id):
     except requests.exceptions.RequestException:    # This is the correct syntax
         # Return True to allow for another pass for test
         print("Error encountered, returning True for check_game")
+        return True
+
+      
+def check_game_end(team_id):
+    """ Function to check if the game ofchosen team is over. Returns True if game, False if NO game. """
+
+    # Get current time
+    now = datetime.datetime.now()
+
+    # Set URL depending on team selected
+    url = '{}schedule?teamId={}&date={:%Y-%m-%d}'.format(NHL_API_URL, team_id,now)
+    # Avoid request errors (might still not catch errors)
+    try:
+        # TODO proper JSON parsing
+        game_status = requests.get(url)
+        game_status = game_status.text[game_status.text.find('statusCode\" : ') + 15:game_status.text.find('statusCode\" : ') + 16]
+        game_status = int(game_status)
+        if game_status == 7:
+            return False
+        else:
+            return True
+    except requests.exceptions.RequestException:    # This is the correct syntax
+        # Return True to allow for another pass for test
+        print("Error encountered, returning True for check_game_end")
         return True

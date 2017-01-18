@@ -13,20 +13,23 @@ def sleep(sleep_period):
 
     # Get current time
     now = datetime.datetime.now()
-    # Set sleep time for no game today
-    if "day" in sleep_period:
-        delta = datetime.timedelta(days=1)
-    # Set sleep time for not in season
-    elif "season" in sleep_period:
-        # If in August, 31 days else 30
-        if now.month is 8:
-            delta = datetime.timedelta(days=31)
-        else:
-            delta = datetime.timedelta(days=30)
-    next_day = datetime.datetime.today() + delta
-    next_day = next_day.replace(hour=0, minute=0)
-    sleep = next_day - now
-    sleep = sleep.total_seconds()
+    if "end_game" in sleep_period:
+        sleep = 36000
+    else:
+        # Set sleep time for no game today
+        if "day" in sleep_period:
+            delta = datetime.timedelta(days=1)
+        # Set sleep time for not in season
+        elif "season" in sleep_period:
+            # If in August, 31 days else 30
+            if now.month is 8:
+                delta = datetime.timedelta(days=31)
+            else:
+                delta = datetime.timedelta(days=30)
+        next_day = datetime.datetime.today() + delta
+        next_day = next_day.replace(hour=0, minute=0)
+        sleep = next_day - now
+        sleep = sleep.total_seconds()
     time.sleep(sleep)
 
 
@@ -87,7 +90,6 @@ def setup_nhl():
         if delay is "":
             delay = 0
     delay = float(delay)
-    print(team_id, API_URL, delay)
     return (team_id, API_URL, delay)
 
 
@@ -110,37 +112,44 @@ if __name__ == "__main__":
 
             print("season : {}".format(season))
 
-            # check if game
+            # check game
             response = requests.get("{}team/{}/game".format(API_URL, team_id))
             gameday = response.json()['game']
-
+            
+            # check end of game
+            response = requests.get("{}team/{}/end_game".format(API_URL, team_id))
+            game_end = response.json()['end_game']
+            
             print("gameday : {}".format(gameday))
 
             time.sleep(1)
 
             if season:
                 if gameday:
+                    if game_end:
+                        # Check score online and save score
+                        response = requests.get(
+                            "{}team/{}/score".format(API_URL, team_id))
+                        new_score = response.json()['score']
 
-                    # Check score online and save score
-                    response = requests.get(
-                        "{}team/{}/score".format(API_URL, team_id))
-                    new_score = response.json()['score']
+                        # If new game, replace old score with 0
+                        if old_score > new_score:
+                            old_score = 0
 
-                    # If new game, replace old score with 0
-                    if old_score > new_score:
-                        old_score = 0
-
-                    # If score change...
-                    if new_score > old_score:
-                        """!!!!!!!!ADD DELAY HERE!!!!!!!"""
-                        print("OOOOOHHHHHHH...")
-                        time.sleep(delay)
-                        # save new score
-                        print("GOAL!")
-                        old_score = new_score
-                        # activate_goal_light()
-                        requests.get("{}goal_light/activate".format(API_URL))
-
+                        # If score change...
+                        if new_score > old_score:
+                            """!!!!!!!!ADD DELAY HERE!!!!!!!"""
+                            print("OOOOOHHHHHHH...")
+                            time.sleep(delay)
+                            # save new score
+                            print("GOAL!")
+                            old_score = new_score
+                            # activate_goal_light()
+                            requests.get("{}goal_light/activate".format(API_URL))
+                        
+                    else:
+                        print("Game Over!")
+                        sleep("end_game")
                 else:
                     print("No Game Today!")
                     sleep("day")
