@@ -13,23 +13,20 @@ def sleep(sleep_period):
 
     # Get current time
     now = datetime.datetime.now()
-    if "end_game" in sleep_period:
-        sleep = 36000
-    else:
-        # Set sleep time for no game today
-        if "day" in sleep_period:
-            delta = datetime.timedelta(days=1)
-        # Set sleep time for not in season
-        elif "season" in sleep_period:
-            # If in August, 31 days else 30
-            if now.month is 8:
-                delta = datetime.timedelta(days=31)
-            else:
-                delta = datetime.timedelta(days=30)
-        next_day = datetime.datetime.today() + delta
-        next_day = next_day.replace(hour=0, minute=0)
-        sleep = next_day - now
-        sleep = sleep.total_seconds()
+    # Set sleep time for no game today
+    if "day" in sleep_period:
+        delta = datetime.timedelta(days=1)
+    # Set sleep time for not in season
+    elif "season" in sleep_period:
+        # If in August, 31 days else 30
+        if now.month is 8:
+            delta = datetime.timedelta(days=31)
+        else:
+            delta = datetime.timedelta(days=30)
+    next_day = datetime.datetime.today() + delta
+    next_day = next_day.replace(hour=12, minute=10)
+    sleep = next_day - now
+    sleep = sleep.total_seconds()
     time.sleep(sleep)
 
 
@@ -116,11 +113,13 @@ if __name__ == "__main__":
             response = requests.get("{}team/{}/game".format(API_URL, team_id))
             gameday = response.json()['game']
             
+            print("gameday : {}".format(gameday))
+            
             # check end of game
             response = requests.get("{}team/{}/end_game".format(API_URL, team_id))
             game_end = response.json()['end_game']
             
-            print("gameday : {}".format(gameday))
+            print("game_end : {}".format(game_end))
 
             time.sleep(1)
 
@@ -149,13 +148,13 @@ if __name__ == "__main__":
                         
                     else:
                         print("Game Over!")
-                        sleep("end_game")
+                        sleep("day") #sleep till tomorrow
                 else:
                     print("No Game Today!")
-                    sleep("day")
+                    sleep("day") #sleep till tomorrow
             else:
                 print("OFF SEASON!")
-                sleep("season")
+                sleep("season") #sleep till next season
 
     except KeyboardInterrupt:
         print("\nCtrl-C pressed")
