@@ -25,7 +25,7 @@ def setup():
     GPIO.add_event_detect(15, GPIO.RISING, activate_goal_light, 5000)
 
 
-def activate_goal_light():
+def activate_goal_light(gpio_event_var=0):
     """ Function to activate GPIO for goal light and Audio clip. """
 
     # select random audio clip
